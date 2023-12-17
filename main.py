@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import filedialog
 import pandas as pd
 import threading
-from utils import mask_private_info, configure_logger
+from utils import mask_private_info, configure_logger, load_ner_model
 
 logger = configure_logger(logging)
 
@@ -21,10 +21,7 @@ class MaskingApp:
         self.start_button = tk.Button(root, text="Start Masking", command=self.start_masking)
         self.start_button.pack()
 
-        self.ner = self.load_ner_model()
-
-    def load_ner_model(self):
-        return lambda text: text
+        self.ner = load_ner_model()
 
     def start_masking(self):
         file_path = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv"), ("Excel files", "*.xlsx")])
@@ -70,8 +67,7 @@ class MaskingApp:
             self.log(f"Masking process completed. Masked file saved at: {masked_file_path}")
 
         except Exception as e:
-            print(e)
-            self.log(f"Error during masking process: {str(e)}")
+            logger.error(f"Error during masking process: {str(e)}")
 
     def log(self, message):
         current_logs = self.log_text.get()
